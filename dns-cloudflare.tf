@@ -6,4 +6,3 @@ resource "cloudflare_record" "netbox" {
   ttl      = 300
   value    = each.value
 }
-
