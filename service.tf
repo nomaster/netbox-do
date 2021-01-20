@@ -4,7 +4,7 @@ resource "kubernetes_service" "netbox" {
     namespace = kubernetes_namespace.netbox.metadata[0].name
     annotations = {
       "service.beta.kubernetes.io/do-loadbalancer-name"                   = var.netbox_domain
-      "service.beta.kubernetes.io/do-loadbalancer-certificate-id"         = digitalocean_certificate.netbox.id
+      "service.beta.kubernetes.io/do-loadbalancer-certificate-id"         = digitalocean_certificate.netbox.uuid
       "service.beta.kubernetes.io/do-loadbalancer-protocol"               = "http2"
       "service.beta.kubernetes.io/do-loadbalancer-redirect-http-to-https" = true
       "service.beta.kubernetes.io/do-loadbalancer-tls-ports"              = 443
