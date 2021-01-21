@@ -4,16 +4,6 @@ resource "kubernetes_namespace" "netbox" {
   }
 }
 
-resource "kubernetes_config_map" "nginx" {
-  metadata {
-    name      = "nginx"
-    namespace = kubernetes_namespace.netbox.metadata[0].name
-  }
-  data = {
-    "nginx.conf" = file("nginx.conf")
-  }
-}
-
 resource "kubernetes_deployment" "netbox" {
   metadata {
     name      = "netbox-server"
@@ -62,69 +52,15 @@ resource "kubernetes_deployment" "netbox" {
               memory = "50Mi"
             }
           }
-          env {
-            name  = "ALLOWED_HOSTS"
-            value = "*"
+          env_from {
+            config_map_ref {
+              name = "netbox"
+            }
           }
-          env {
-            name  = "DB_HOST"
-            value = digitalocean_database_cluster.postgres.host
-          }
-          env {
-            name  = "DB_PORT"
-            value = digitalocean_database_cluster.postgres.port
-          }
-          env {
-            name  = "DB_SSLMODE"
-            value = "require"
-          }
-          env {
-            name  = "DB_USER"
-            value = digitalocean_database_cluster.postgres.user
-          }
-          env {
-            name  = "DB_PASSWORD"
-            value = digitalocean_database_cluster.postgres.password
-          }
-          env {
-            name  = "DB_NAME"
-            value = digitalocean_database_cluster.postgres.database
-          }
-          env {
-            name  = "SECRET_KEY"
-            value = random_password.netbox_secret.result
-          }
-          env {
-            name  = "REDIS_HOST"
-            value = digitalocean_database_cluster.redis.host
-          }
-          env {
-            name  = "REDIS_PORT"
-            value = digitalocean_database_cluster.redis.port
-          }
-          env {
-            name  = "REDIS_PASSWORD"
-            value = digitalocean_database_cluster.redis.password
-          }
-          env {
-            name  = "REDIS_SSL"
-            value = "true"
-          }
-          env {
-            name  = "REDIS_CACHE_HOST"
-            value = digitalocean_database_cluster.redis.host
-          }
-          env {
-            name  = "REDIS_CACHE_PORT"
-            value = digitalocean_database_cluster.redis.port
-          }
-          env {
-            name  = "REDIS_CACHE_PASSWORD"
-            value = digitalocean_database_cluster.redis.password
-          }
-          env {
-            name  = "REDIS_CACHE_SSL"
-            value = "true"
+          env_from {
+            secret_ref {
+              name = "netbox"
+            }
           }
           volume_mount {
             name       = "netbox-static"
@@ -190,73 +126,18 @@ resource "kubernetes_deployment" "netbox-worker" {
           name    = "netbox-worker"
           image   = "netboxcommunity/netbox:v${var.netbox_version}"
           command = ["python3", "/opt/netbox/netbox/manage.py", "rqworker"]
-          env {
-            name  = "DB_HOST"
-            value = digitalocean_database_cluster.postgres.host
+          env_from {
+            config_map_ref {
+              name = "netbox"
+            }
           }
-          env {
-            name  = "DB_PORT"
-            value = digitalocean_database_cluster.postgres.port
-          }
-          env {
-            name  = "DB_SSLMODE"
-            value = "require"
-          }
-          env {
-            name  = "DB_USER"
-            value = digitalocean_database_cluster.postgres.user
-          }
-          env {
-            name  = "DB_PASSWORD"
-            value = digitalocean_database_cluster.postgres.password
-          }
-          env {
-            name  = "DB_NAME"
-            value = digitalocean_database_cluster.postgres.database
-          }
-          env {
-            name  = "SECRET_KEY"
-            value = random_password.netbox_secret.result
-          }
-          env {
-            name  = "REDIS_HOST"
-            value = digitalocean_database_cluster.redis.host
-          }
-          env {
-            name  = "REDIS_PASSWORD"
-            value = digitalocean_database_cluster.redis.password
-          }
-          env {
-            name  = "REDIS_PORT"
-            value = digitalocean_database_cluster.redis.port
-          }
-          env {
-            name  = "REDIS_SSL"
-            value = "true"
-          }
-          env {
-            name  = "REDIS_CACHE_HOST"
-            value = digitalocean_database_cluster.redis.host
-          }
-          env {
-            name  = "REDIS_CACHE_PORT"
-            value = digitalocean_database_cluster.redis.port
-          }
-          env {
-            name  = "REDIS_CACHE_PASSWORD"
-            value = digitalocean_database_cluster.redis.password
-          }
-          env {
-            name  = "REDIS_CACHE_SSL"
-            value = "true"
+          env_from {
+            secret_ref {
+              name = "netbox"
+            }
           }
         }
       }
     }
   }
 }
-
-resource "random_password" "netbox_secret" {
-  length = 32
-}
-
