@@ -8,6 +8,18 @@ variable "do_token" {
   type        = string
 }
 
+variable "do_spaces_access_key_id" {
+  description = "DigitalOcean Spaces access key ID"
+  type        = string
+  default     = null
+}
+
+variable "do_spaces_access_key_secret" {
+  description = "DigitalOcean Spaces access key secret"
+  type        = string
+  default     = null
+}
+
 variable "do_nameservers" {
   description = "DigitalOcean nameserver hostnames"
   type        = map(string)

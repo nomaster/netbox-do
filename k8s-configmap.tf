@@ -15,6 +15,10 @@ resource "kubernetes_config_map" "netbox" {
   }
   data = {
     "ALLOWED_HOSTS" : "*"
+    "AWS_S3_REGION_NAME" : var.do_region
+    "AWS_S3_ENDPOINT_URL" : "https://${var.do_region}.digitaloceanspaces.com"
+    "AWS_ACCESS_KEY_ID" : var.do_spaces_access_key_id
+    "AWS_SECRET_ACCESS_KEY" : var.do_spaces_access_key_secret
     "DB_HOST" : digitalocean_database_cluster.postgres.host
     "DB_NAME" : digitalocean_database_cluster.postgres.database
     "DB_PORT" : digitalocean_database_cluster.postgres.port
@@ -26,5 +30,15 @@ resource "kubernetes_config_map" "netbox" {
     "REDIS_HOST" : digitalocean_database_cluster.redis.host
     "REDIS_PORT" : digitalocean_database_cluster.redis.port
     "REDIS_SSL" : "true"
+  }
+}
+
+resource "kubernetes_config_map" "netbox_extra" {
+  metadata {
+    name = "netbox-extra"
+    namespace = kubernetes_namespace.netbox.metadata[0].name
+  }
+  data = {
+    "extra.py" = file("netbox-extra.py")
   }
 }

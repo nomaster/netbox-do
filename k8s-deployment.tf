@@ -36,6 +36,12 @@ resource "kubernetes_deployment" "netbox" {
             name = "nginx"
           }
         }
+        volume {
+          name = "netbox-extra"
+          config_map {
+            name = "netbox-extra"
+          }
+        }
         container {
           image = "netboxcommunity/netbox:v${var.netbox_version}"
           name  = "netbox"
@@ -65,6 +71,10 @@ resource "kubernetes_deployment" "netbox" {
           volume_mount {
             name       = "netbox-static"
             mount_path = "/opt/netbox/netbox/static/"
+          }
+          volume_mount {
+            name       = "netbox-extra"
+            mount_path = "/opt/netbox/netbox/netbox/extra.py"
           }
         }
         container {
