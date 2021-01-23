@@ -46,7 +46,16 @@ resource "kubernetes_deployment" "netbox" {
           image = "netboxcommunity/netbox:v${var.netbox_version}"
           name  = "netbox"
           port {
+            name = "http"
             container_port = 8001
+          }
+          readiness_probe {
+            http_get {
+              path = "/"
+              port = "http"
+            }
+            initial_delay_seconds = 5
+            period_seconds = 5
           }
           resources {
             limits {
