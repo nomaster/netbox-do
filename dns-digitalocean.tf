@@ -12,3 +12,10 @@ resource "digitalocean_record" "netbox" {
   value  = kubernetes_service.netbox.load_balancer_ingress[0].ip
   ttl    = 300
 }
+
+resource "digitalocean_domain" "cdn" {
+  depends_on = [ 
+      digitalocean_domain.netbox,
+  ]
+  name = local.cdn
+}

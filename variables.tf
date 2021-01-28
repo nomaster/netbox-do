@@ -54,3 +54,7 @@ variable "netbox_domain" {
   description = "NetBox domain"
   type        = string
 }
+
+locals {
+  cdn = "cdn.${var.netbox_domain}"
+}

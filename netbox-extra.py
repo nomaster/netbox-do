@@ -6,4 +6,5 @@ STORAGE_CONFIG = {
     'AWS_SECRET_ACCESS_KEY': environ.get('AWS_SECRET_ACCESS_KEY', 'netbox'),
     'AWS_STORAGE_BUCKET_NAME': environ.get('AWS_STORAGE_BUCKET_NAME', 'netbox'),
     'AWS_S3_REGION_NAME': environ.get('AWS_S3_REGION_NAME', 'eu-west-1'),
+    'AWS_S3_CUSTOM_DOMAIN': environ.get('AWS_S3_CUSTOM_DOMAIN', None),
 }
